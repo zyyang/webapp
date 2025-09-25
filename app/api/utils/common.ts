@@ -9,11 +9,14 @@ import {
   APP_INFO,
 } from '@/config'
 
-const userPrefix = `user_${APP_ID}:`
+// const userPrefix = `user_${APP_ID}:`
 
 export const getInfo = (request: NextRequest) => {
+  console.log('getInfo')
   const sessionId = request.cookies.get('session_id')?.value || v4()
-  const userName = request.cookies.get('user_name')?.value || userPrefix
+  const userName = request.cookies.get('user_name')?.value || APP_ID
+
+  console.log('getInfo', sessionId, userName)
   const user = `user_${userName}:${sessionId}`
   return {
     sessionId,
@@ -29,6 +32,7 @@ export const setSession = (sessionId: string) => {
 }
 
 export const setUserName = (userName: string) => {
+  console.log('setUserName', userName)
   if (APP_INFO.disable_session_same_site)
   { return { 'Set-Cookie': `user_name=${userName}; SameSite=None; Secure` } }
 
