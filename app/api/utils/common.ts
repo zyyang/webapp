@@ -13,7 +13,7 @@ const userPrefix = `user_${APP_ID}:`
 
 export const getInfo = (request: NextRequest) => {
   const sessionId = request.cookies.get('session_id')?.value || v4()
-  const userName = request.cookies.get('userName')?.value || userPrefix
+  const userName = request.cookies.get('user_name')?.value || userPrefix
   const user = `user_${userName}:${sessionId}`
   return {
     sessionId,
@@ -21,7 +21,7 @@ export const getInfo = (request: NextRequest) => {
   }
 }
 
-export const setSession = (sessionId: string, userName: string = '') => {
+export const setSession = (sessionId: string) => {
   if (APP_INFO.disable_session_same_site)
   { return { 'Set-Cookie': `session_id=${sessionId}; SameSite=None; Secure` } }
 
@@ -29,7 +29,6 @@ export const setSession = (sessionId: string, userName: string = '') => {
 }
 
 export const setUserName = (userName: string) => {
-  console.log('setUserName', userName)
   if (APP_INFO.disable_session_same_site)
   { return { 'Set-Cookie': `user_name=${userName}; SameSite=None; Secure` } }
 
