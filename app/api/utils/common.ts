@@ -12,9 +12,8 @@ import {
 // const userPrefix = `user_${APP_ID}:`
 
 export const getInfo = (request: NextRequest) => {
-  console.log('getInfo')
   const sessionId = request.cookies.get('session_id')?.value || v4()
-  const userName = request.cookies.get('user_name')?.value || APP_ID
+  const userName = decodeURIComponent(request.cookies.get('user_name')?.value || APP_ID)
 
   console.log('getInfo', sessionId, userName)
   const user = `user_${userName}:${sessionId}`
@@ -32,11 +31,10 @@ export const setSession = (sessionId: string) => {
 }
 
 export const setUserName = (userName: string) => {
-  console.log('setUserName', userName)
   if (APP_INFO.disable_session_same_site)
-  { return { 'Set-Cookie': `user_name=${userName}; SameSite=None; Secure` } }
+  { return { 'Set-Cookie': `user_name=${encodeURIComponent(userName)}; SameSite=None; Secure` } }
 
-  return { 'Set-Cookie': `user_name=${userName}` }
+  return { 'Set-Cookie': `user_name=${encodeURIComponent(userName)}` }
 }
 
 export const client = new ChatClient(API_KEY, API_URL || undefined)

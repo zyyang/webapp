@@ -1,11 +1,7 @@
 import axios from 'axios'
 // src/app/api/login/route.ts
-import type {
-  NextRequest,
-} from 'next/server'
-import {
-  NextResponse,
-} from 'next/server'
+import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 
 import { setUserName } from '../utils/common'
 
@@ -56,11 +52,11 @@ export async function POST(req: NextRequest) {
     const userid = await getUseridByCode(accessToken, authCode)
     const user = await getUserDetail(accessToken, userid)
 
-    setUserName(user.name)
-
     return NextResponse.json({
       ok: true,
       ...(({ userid, name, role_list }) => ({ userid, name, role_list }))(user),
+    } as object, {
+      headers: setUserName(user.name),
     })
   } catch (err) {
     const message = err instanceof Error ? err.message : '服务器错误'
