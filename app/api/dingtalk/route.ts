@@ -8,6 +8,12 @@ import { setUserName } from '../utils/common'
 const APP_KEY = process.env.DINGTALK_APP_KEY!
 const APP_SECRET = process.env.DINGTALK_APP_SECRET!
 
+interface DingTalkGroup {
+  group_name: string
+  id: string
+  name: string
+}
+
 // 获取应用级 access_token
 async function getAccessToken() {
   const url = 'https://oapi.dingtalk.com/gettoken'
@@ -52,11 +58,18 @@ export async function POST(req: NextRequest) {
     const userid = await getUseridByCode(accessToken, authCode)
     const user = await getUserDetail(accessToken, userid)
 
+    const smartReportRoles = user.role_list
+      .filter((role: DingTalkGroup) => role.group_name === '智能报表角色组')
+      .map((role: DingTalkGroup) => role.name)
+      .join('|')
+
+    const userNameWithRoles = smartReportRoles ? `${user.name}_${smartReportRoles}` : user.name
+
     return NextResponse.json({
       ok: true,
       ...(({ userid, name, role_list }) => ({ userid, name, role_list }))(user),
     } as object, {
-      headers: setUserName(user.name),
+      headers: setUserName(userNameWithRoles),
     })
   } catch (err) {
     const message = err instanceof Error ? err.message : '服务器错误'
